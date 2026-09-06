@@ -1,0 +1,33 @@
+# Local APK extraction / analysis artifacts (never commit expanded APK contents)
+apk-analysis/
+extracted/
+*.dex
+AndroidManifest.xml
+resources.arsc
+stamp-cert-sha256
+cert_v2.der
+cert_v3.der
+cert_v4.der
+manifest_dump.xml
+secret_report.txt
+sigblock.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# CI byproducts
+verify-report.json
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
