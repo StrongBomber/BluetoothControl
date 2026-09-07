@@ -40,8 +40,8 @@ class MainActivity : Activity() {
 
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
-            val binder = binder as? GamepadService.LocalBinder ?: return
-            service = binder.service
+            val lb = binder as? GamepadService.LocalBinder ?: return
+            service = lb.service
             service?.addListener(stateListener)
             updateUi()
             pushState()
