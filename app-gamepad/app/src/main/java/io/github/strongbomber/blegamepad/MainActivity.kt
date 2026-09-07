@@ -39,11 +39,15 @@ class MainActivity : Activity() {
         override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
             val binder = binder as? GamepadService.LocalBinder ?: return
             service = binder.service
+            service?.addListener(stateListener)
             updateUi()
             pushState()
+            // Yarış durumu: kullanıcı bağlanma tamamlanmadan "Bağlanabilir Ol" dedi
+            if (serviceStarted) service?.startAdvertising()
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
+            service?.removeListener(stateListener)
             service = null
         }
     }
@@ -66,8 +70,8 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+        // Listener kayıt işlemi onServiceConnected içinde yapılır (servis hazır olduğunda).
         bindService(Intent(this, GamepadService::class.java), connection, Context.BIND_AUTO_CREATE)
-        service?.addListener(stateListener)
     }
 
     override fun onPause() {
