@@ -24,12 +24,28 @@ object HidGamepad {
 
     const val REPORT_ID: Int = 1
 
-    const val BTN_A = 0x01
-    const val BTN_B = 0x02
-    const val BTN_X = 0x04
-    const val BTN_Y = 0x08
-    const val BTN_L = 0x10
-    const val BTN_R = 0x20
+    /**
+     * PlayStation düzeni buton eşlemesi (bit → buton).
+     *
+     *  X (cross/alt), O (circle/sağ), □ (square/sol), △ (triangle/üst),
+     *  L1, R1, L2, R2, Share, Options, L3, R3, PS.
+     *
+     * PC (XInput'a otomatik harflenen standart gamepad) tarafında
+     * cross=A, circle=B, square=X, triangle=Y olarak görünür.
+     */
+    const val BTN_CROSS = 0x0001    // ✕ (alt)      → XInput A
+    const val BTN_CIRCLE = 0x0002   // ○ (sağ)      → XInput B
+    const val BTN_SQUARE = 0x0004   // □ (sol)      → XInput X
+    const val BTN_TRIANGLE = 0x0008 // △ (üst)      → XInput Y
+    const val BTN_L1 = 0x0010
+    const val BTN_R1 = 0x0020
+    const val BTN_L2 = 0x0040
+    const val BTN_R2 = 0x0080
+    const val BTN_SHARE = 0x0100
+    const val BTN_OPTIONS = 0x0200
+    const val BTN_L3 = 0x0400       // sol stick click
+    const val BTN_R3 = 0x0800       // sağ stick click
+    const val BTN_PS = 0x1000
 
     /**
      * Standart gamepad rapor betimleyicisi: 16 buton + 5 ekseni (X, Y, RX, RY, Rz)

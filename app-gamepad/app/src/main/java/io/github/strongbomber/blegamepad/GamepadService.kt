@@ -177,7 +177,7 @@ class GamepadService : Service() {
         val adv = advertiser
         val server = gattServer
         if (adv == null || server == null) return
-        val name = deviceName()
+        val name = deviceName() // "PS BLE Gamepad" — her zaman reklamda görünür
         val settings = AdvertiseSettings.Builder()
             .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_BALANCED)
             .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_MEDIUM)
@@ -298,15 +298,11 @@ class GamepadService : Service() {
         return c
     }
 
-    private fun deviceName(): String {
-        val adapter = (getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
-        val name = try {
-            adapter?.name // API 31+: BLUETOOTH_CONNECT izni gerektirir
-        } catch (_: SecurityException) {
-            null
-        }
-        return name?.takeIf { it.isNotBlank() } ?: getString(R.string.app_name)
-    }
+    /**
+     * Cihaz kimliği: telefonun adı DEĞİL — bu uygulamanın oyun kumandası adı.
+     * Bağlanan taraf (PC/TV/konsol) cihazı "PS BLE Gamepad" olarak görür.
+     */
+    private fun deviceName(): String = getString(R.string.app_name)
 
     private fun nameOf(device: BluetoothDevice): String {
         return try {

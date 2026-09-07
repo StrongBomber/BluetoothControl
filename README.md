@@ -20,7 +20,7 @@ doğrulanır.
 | `docs/SECURITY.md` | Güvenlik denetim raporu (2026-09-06) |
 | `docs/APK-METADATA.md` | APK metadata'sı: paket, sürüm, izinler, bileşenler, imzalar, bağımlılıklar |
 | `extracted/ANALYSIS.md` | APK kaynak çıkartımı + rekonstrükte edilmiş BLE HID protokolü analizi (2026-09-07) |
-| `app-gamepad/` | **BLE Gamepad** — bu analizden yola çıkarak geliştirilen, açık kaynak Android uygulaması (telefonu BLE oyun kumandası olarak gösterir); kendi Gradle projesi ve otomatik APK derlemesi |
+| `app-gamepad/` | **PS BLE Gamepad** — bu analizden yola çıkarak geliştirilen, açık kaynak Android uygulaması (telefonu PlayStation düzeninde BLE oyun kumandası olarak gösterir); kendi Gradle projesi ve otomatik APK derlemesi |
 | `.github/workflows/` | CI (her push/PR'da doğrulama), otomatik Release (etiketle) ve gamepad APK derlemesi |
 
 ## Hızlı doğrulama
@@ -97,7 +97,9 @@ Blek'in kapalı kaynak olması ve oyun kumandasının ayrı bir uygulama olması
 uygulaması geliştirildi: **`app-gamepad/`** — paketi `io.github.strongbomber.blegamepad`.
 
 - Telefon, BLE GATT sunucusu olarak bağlanan cihaza (PC/TV/konsol) **HID gamepad**
-  görünümünde: 2 joystick + 6 aksiyon tuşu + yön tuşları.
+  görünümünde; arayüz **PlayStation (DualSense) düzenindedir**: △○✕□, L1/L2/R1/R2,
+  D-pad, Share/PS/Options, 2 stick (stick click ile L3/R3). Platform uyumu:
+  Windows/Linux/Android ✅, iOS ve PlayStation için kısıtlar (aşağıda).
 - Kullanılan protokol, `extracted/ANALYSIS.md` §3.2'de belgelenen rekonstrükte edilmiş
   Blek mimarisinin aynısıdır (0x1812 HOGP + Report `2A4D` + `[reportID, payload]`
   bildirimi + 5 dakikalık keep-alive).

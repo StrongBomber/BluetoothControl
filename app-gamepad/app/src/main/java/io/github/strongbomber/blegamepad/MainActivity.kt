@@ -9,14 +9,17 @@ import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.IBinder
+import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 
 /**
- * Oyun kumandası arayüzü: iki joystick + yön tuşları + aksiyon tuşları.
- * Her durum değişiminde GamepadService'e bildirilir → BLE HID raporu gönderilir.
+ * PlayStation (DualSense) düzeni oyun kumandası arayüzü.
+ *
+ * Her tuş/stick değişimi [GamepadService.updateState] ile BLE HID raporuna
+ * dönüştürülür (16 buton + 5 eksen + 2 hat).
  */
 class MainActivity : Activity() {
 
@@ -61,7 +64,11 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setupActionButtons()
+        setupHoldableButtons(
+            R.id.btn_cross, R.id.btn_circle, R.id.btn_square, R.id.btn_triangle,
+            R.id.btn_l1, R.id.btn_r1, R.id.btn_l2, R.id.btn_r2,
+            R.id.btn_share, R.id.btn_options, R.id.btn_ps
+        )
         setupDpad()
         setupSticks()
         toggleButton.setOnClickListener { onToggle() }
@@ -142,28 +149,37 @@ class MainActivity : Activity() {
         service?.updateState(buttons, x, y, rx, ry, 127, hat1, hat2)
     }
 
-    private fun setupActionButtons() {
-        val map = mapOf(
-            R.id.btn_a to 1,
-            R.id.btn_b to 2,
-            R.id.btn_x to 4,
-            R.id.btn_y to 8,
-            R.id.btn_l to 16,
-            R.id.btn_r to 32
+    /** Basılı tutulabilen tuşlar: her bit, HUD maskesindeki karşılığı. */
+    private fun setupHoldableButtons(vararg pairs: Int) {
+        val bits = mapOf(
+            R.id.btn_cross to HidGamepad.BTN_CROSS,
+            R.id.btn_circle to HidGamepad.BTN_CIRCLE,
+            R.id.btn_square to HidGamepad.BTN_SQUARE,
+            R.id.btn_triangle to HidGamepad.BTN_TRIANGLE,
+            R.id.btn_l1 to HidGamepad.BTN_L1,
+            R.id.btn_r1 to HidGamepad.BTN_R1,
+            R.id.btn_l2 to HidGamepad.BTN_L2,
+            R.id.btn_r2 to HidGamepad.BTN_R2,
+            R.id.btn_share to HidGamepad.BTN_SHARE,
+            R.id.btn_options to HidGamepad.BTN_OPTIONS,
+            R.id.btn_ps to HidGamepad.BTN_PS
         )
-        for ((id, bit) in map) {
+        for (id in pairs) {
+            val bit = bits[id] ?: continue
             val b = findViewById<Button>(id)
             b.setOnTouchListener { v, ev ->
                 when (ev.actionMasked) {
                     MotionEvent.ACTION_DOWN -> {
                         buttons = buttons or bit
-                        v.alpha = 0.55f
+                        v.alpha = 0.45f
+                        v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                         pushState()
                         true
                     }
                     MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                         buttons = buttons and bit.inv()
                         v.alpha = 1f
+                        v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                         pushState()
                         true
                     }
@@ -187,13 +203,15 @@ class MainActivity : Activity() {
                 when (ev.actionMasked) {
                     MotionEvent.ACTION_DOWN -> {
                         hat2 = hat
-                        v.alpha = 0.55f
+                        v.alpha = 0.45f
+                        v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                         pushState()
                         true
                     }
                     MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                         if (hat2 == hat) hat2 = 0
                         v.alpha = 1f
+                        v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                         pushState()
                         true
                     }
@@ -204,15 +222,19 @@ class MainActivity : Activity() {
     }
 
     private fun setupSticks() {
-        findViewById<JoystickView>(R.id.stick_left).onChange = { sx, sy, hat ->
+        findViewById<JoystickView>(R.id.stick_left).onChange = { sx, sy, hat, pressed ->
             x = sx
             y = sy
             hat1 = hat
+            if (pressed) buttons = buttons or HidGamepad.BTN_L3
+            else buttons = buttons and HidGamepad.BTN_L3.inv()
             pushState()
         }
-        findViewById<JoystickView>(R.id.stick_right).onChange = { sx, sy, _ ->
+        findViewById<JoystickView>(R.id.stick_right).onChange = { sx, sy, _, pressed ->
             rx = sx
             ry = sy
+            if (pressed) buttons = buttons or HidGamepad.BTN_R3
+            else buttons = buttons and HidGamepad.BTN_R3.inv()
             pushState()
         }
     }

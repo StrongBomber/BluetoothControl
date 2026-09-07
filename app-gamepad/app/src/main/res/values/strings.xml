@@ -1,15 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">BLE Gamepad</string>
+    <string name="app_name">PS BLE Gamepad</string>
 
     <string name="status_init">Bağlanıyor…</string>
     <string name="status_off">Kapalı — bağlanabilir olmak için düğmeye basın</string>
-    <string name="status_advertising">Reklam yayında — PC/TV/konsolda Bluetooth ayarlarından cihazın adıyla bağlanın</string>
+    <string name="status_advertising">Reklam yayında — PC/TV/konsolda Bluetooth ayarlarından “PS BLE Gamepad” adıyla bağlanın</string>
     <string name="status_connected">Bağlı: %1$s</string>
     <string name="status_perm">Bluetooth izinleri gerekli — bildirim iznini de verin</string>
 
     <string name="btn_start">Bağlanabilir Ol</string>
     <string name="btn_stop">Durdur</string>
+
+    <string name="btn_l1">L1</string>
+    <string name="btn_l2">L2</string>
+    <string name="btn_r1">R1</string>
+    <string name="btn_r2">R2</string>
+    <string name="btn_share">SHARE</string>
+    <string name="btn_options">OPTIONS</string>
+    <string name="btn_ps">PS</string>
 
     <string name="notif_channel">Oyun kumandası durumu</string>
     <string name="status_advertising_short">Bağlanmayı bekliyor…</string>
