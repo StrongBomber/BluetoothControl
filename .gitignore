@@ -1,6 +1,8 @@
 # Local APK extraction / analysis artifacts (never commit expanded APK contents)
+# — decompiled code of a closed-source app must not be redistributed.
 apk-analysis/
-extracted/
+extracted/*
+!extracted/ANALYSIS.md
 *.dex
 AndroidManifest.xml
 resources.arsc

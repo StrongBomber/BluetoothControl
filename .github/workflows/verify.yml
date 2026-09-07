@@ -1,0 +1,40 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-apk:
+    name: APK integrity & security baseline
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify APK (checksum, signature block, cert pin, manifest baseline)
+        run: python3 scripts/verify_release.py "Bluetooth Klavye & Fare.apk"
+
+      - name: Save JSON report
+        if: always()
+        run: |
+          python3 scripts/verify_release.py "Bluetooth Klavye & Fare.apk" --json > verify-report.json || true
+          cat verify-report.json
+
+      - name: Upload report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verify-report
+          path: verify-report.json
+          if-no-files-found: ignore
