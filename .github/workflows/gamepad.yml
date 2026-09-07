@@ -62,21 +62,8 @@ jobs:
 
       - name: Gradle ile derle
         run: |
+          set -o pipefail
           ./gradlew --no-daemon --stacktrace assembleDebug 2>&1 | tee ../gradle-build.log
-
-      - name: Hata özeti (başarısızsa)
-        if: failure()
-        run: |
-          log=""
-          for f in ../gradle-build.log sdk-install.log sdk-lic.log; do
-            if [ -f "$f" ]; then log="$f"; break; fi
-          done
-          {
-            echo "## Derleme hatası — son 80 satır (${log:-yok})"
-            echo '```'
-            if [ -n "$log" ]; then tail -80 "$log"; fi
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Üretilen APK'ları listele
         run: ls -lh app/build/outputs/apk/debug/
@@ -94,3 +81,17 @@ jobs:
         with:
           files: |
             app-gamepad/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Hata özeti (başarısızsa)
+        if: failure()
+        run: |
+          log=""
+          for f in ../gradle-build.log sdk-install.log sdk-lic.log; do
+            if [ -f "$f" ]; then log="$f"; break; fi
+          done
+          {
+            echo "## Derleme hatası — son 80 satır (${log:-yok})"
+            echo '```'
+            if [ -n "$log" ]; then tail -80 "$log"; fi
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
