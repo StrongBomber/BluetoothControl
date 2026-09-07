@@ -300,7 +300,12 @@ class GamepadService : Service() {
 
     private fun deviceName(): String {
         val adapter = (getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
-        return adapter?.name?.takeIf { it.isNotBlank() } ?: getString(R.string.app_name)
+        val name = try {
+            adapter?.name // API 31+: BLUETOOTH_CONNECT izni gerektirir
+        } catch (_: SecurityException) {
+            null
+        }
+        return name?.takeIf { it.isNotBlank() } ?: getString(R.string.app_name)
     }
 
     private fun nameOf(device: BluetoothDevice): String {
@@ -444,19 +449,15 @@ class GamepadService : Service() {
     }
 
     private val advertiseCallback = object : AdvertiseCallback() {
-        override fun onStart(settings: AdvertiseSettings, status: Int) {
-            if (status == AdvertiseCallback.ADVERTISE_SUCCESS) {
-                Log.i(TAG, "Reklam başladı")
-                if (connectedDevice == null) notifyState(STATE_ADVERTISING, "")
-            } else {
-                Log.e(TAG, "Reklam hatası: status=$status")
-                advertising = false
-                notifyState(STATE_OFF, "")
-            }
+        override fun onStartSuccess(settingsInEffect: AdvertiseSettings) {
+            Log.i(TAG, "Reklam başladı")
+            if (connectedDevice == null) notifyState(STATE_ADVERTISING, "")
         }
 
-        override fun onStop(status: Int) {
-            Log.i(TAG, "Reklam durdu: status=$status")
+        override fun onStartFailure(errorCode: Int) {
+            Log.e(TAG, "Reklam hatası: errorCode=$errorCode")
+            advertising = false
+            notifyState(STATE_OFF, "")
         }
     }
 
