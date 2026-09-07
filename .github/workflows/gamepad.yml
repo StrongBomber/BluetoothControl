@@ -32,11 +32,9 @@ jobs:
 
       - name: Android SDK bileşenlerini güncelle
         run: |
-          exec > >(tee ../sdk-setup.log) 2>&1
-          set -e
           export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/tools/bin:$PATH"
           if ! command -v sdkmanager >/dev/null 2>&1; then
-            echo "::notice::sdkmanager PATH'te yok — cmdline-tools indiriliyor"
+            echo "::error::sdkmanager PATH'te yok (ANDROID_HOME=$ANDROID_HOME) — cmdline-tools indiriliyor"
             curl -fsSL -o /tmp/cmdtools.zip \
               https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
             mkdir -p "$ANDROID_HOME/cmdline-tools"
@@ -44,13 +42,23 @@ jobs:
             rm -rf "$ANDROID_HOME/cmdline-tools/latest"
             mv /tmp/cmdline-tools "$ANDROID_HOME/cmdline-tools/latest"
             export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+            command -v sdkmanager >/dev/null 2>&1 || { echo "::error::cmdline-tools kurulamadı"; exit 1; }
           fi
-          yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager "platforms;android-34" "build-tools;34.0.0" 2>&1 | tee ../sdk-setup.log
-          sdkmanager --list --installed | grep -E "platforms;android-34|build-tools;34.0.0" || {
-            echo "::error::android-34 kurulamadı (kaydedilen: /tmp/cmdtools.log)"
+          yes | sdkmanager --licenses > sdk-lic.log 2>&1 || true
+          set +e
+          sdkmanager "platforms;android-34" "build-tools;34.0.0" > sdk-install.log 2>&1
+          rc=$?
+          set -e
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::sdkmanager kurulumu başarısız rc=$rc — son 30 satır:"
+            tail -30 sdk-install.log | sed 's/^/::error:: /'
             exit 1
-          }
+          fi
+          if ! sdkmanager --list --installed 2>/dev/null | grep -q "platforms;android-34"; then
+            echo "::error::platforms;android-34 listede görünmüyor:"
+            sdkmanager --list --installed 2>&1 | tail -20 | sed 's/^/::error:: /'
+            exit 1
+          fi
 
       - name: Gradle ile derle
         run: |
@@ -59,10 +67,11 @@ jobs:
       - name: Hata özeti (başarısızsa)
         if: failure()
         run: |
+          log=""; for f in ../gradle-build.log sdk-install.log sdk-lic.log; do [ -f "$f" ] && log="$f" && break; done
           {
-            echo '## Derleme hatası — son 80 satır'
+            echo '## Derleme hatası — son 80 satır ('"${log:-yok}")''
             echo '```'
-            tail -80 ../gradle-build.log 2>/dev/null || tail -80 ../sdk-setup.log 2>/dev/null || true
+            [ -n "$log" ] && tail -80 "$log" || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
