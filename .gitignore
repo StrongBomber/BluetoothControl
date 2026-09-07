@@ -1,18 +1,19 @@
 # Local APK extraction / analysis artifacts (never commit expanded APK contents)
 # — decompiled code of a closed-source app must not be redistributed.
+# (kalıplar bilinçli olarak extracted/ ile sınırlıdır; uygulama kodu değil)
 apk-analysis/
 extracted/*
 !extracted/ANALYSIS.md
-*.dex
-AndroidManifest.xml
-resources.arsc
-stamp-cert-sha256
-cert_v2.der
-cert_v3.der
-cert_v4.der
-manifest_dump.xml
-secret_report.txt
-sigblock.json
+extracted/*.dex
+extracted/AndroidManifest.xml
+extracted/resources.arsc
+extracted/stamp-cert-sha256
+extracted/cert_v2.der
+extracted/cert_v3.der
+extracted/cert_v4.der
+extracted/manifest_dump.xml
+extracted/secret_report.txt
+extracted/sigblock.json
 
 # Python
 __pycache__/
