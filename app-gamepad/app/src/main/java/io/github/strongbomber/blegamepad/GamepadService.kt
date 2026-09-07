@@ -20,7 +20,6 @@ import android.bluetooth.le.BluetoothLeAdvertiser
 import android.content.Context
 import android.content.Intent
 import android.os.Binder
-import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -321,12 +320,11 @@ class GamepadService : Service() {
         if (!servicesReady) return
         val value = HidGamepad.pack(buttons, x, y, rx, ry, rz, hat1, hat2)
         try {
-            if (Build.VERSION.SDK_INT >= 33) {
-                server.notifyCharacteristicChanged(dev, char, value)
-            } else {
-                @Suppress("DEPRECATION")
-                server.notifyCharacteristicChanged(dev, char, true)
-            }
+            // includeValue=true bildirim, karakteristikin GÜNCEL değerini gönderir —
+            // önce değer karakteristiğe yazılmak ZORUNDADIR.
+            char.setValue(value)
+            @Suppress("DEPRECATION")
+            server.notifyCharacteristicChanged(dev, char, true)
         } catch (e: Exception) {
             Log.w(TAG, "Bildirim gönderilemedi: ${e.message}")
         }
