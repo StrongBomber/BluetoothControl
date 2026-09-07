@@ -89,6 +89,12 @@ jobs:
           for f in ../gradle-build.log sdk-install.log sdk-lic.log; do
             if [ -f "$f" ]; then log="$f"; break; fi
           done
+          if [ -n "$log" ]; then
+            echo "::error::Derleme hatası — son 60 satır ($log):"
+            tail -60 "$log" | sed 's/^/::error:: /'
+          else
+            echo "::error::Derleme günlüğü bulunamadı"
+          fi
           {
             echo "## Derleme hatası — son 80 satır (${log:-yok})"
             echo '```'
