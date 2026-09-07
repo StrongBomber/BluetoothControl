@@ -67,11 +67,14 @@ jobs:
       - name: Hata özeti (başarısızsa)
         if: failure()
         run: |
-          log=""; for f in ../gradle-build.log sdk-install.log sdk-lic.log; do [ -f "$f" ] && log="$f" && break; done
+          log=""
+          for f in ../gradle-build.log sdk-install.log sdk-lic.log; do
+            if [ -f "$f" ]; then log="$f"; break; fi
+          done
           {
-            echo '## Derleme hatası — son 80 satır ('"${log:-yok}")''
+            echo "## Derleme hatası — son 80 satır (${log:-yok})"
             echo '```'
-            [ -n "$log" ] && tail -80 "$log" || true
+            if [ -n "$log" ]; then tail -80 "$log"; fi
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
