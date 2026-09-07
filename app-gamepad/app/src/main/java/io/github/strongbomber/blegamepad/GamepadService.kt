@@ -179,7 +179,7 @@ class GamepadService : Service() {
         if (adv == null || server == null) return
         val name = deviceName()
         val settings = AdvertiseSettings.Builder()
-            .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_IN_BALANCED)
+            .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_BALANCED)
             .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_MEDIUM)
             .setConnectable(true)
             .build()
@@ -395,11 +395,15 @@ class GamepadService : Service() {
         ) {
             val value = valueFor(characteristic.uuid)
             if (value == null) {
-                gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_READ_NOT_PERMITTED, null)
+                gattServer?.sendResponse(
+                    device, requestId, BluetoothGatt.GATT_READ_NOT_PERMITTED, 0, byteArrayOf()
+                )
                 return
             }
             if (offset >= value.size) {
-                gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_INVALID_OFFSET, null)
+                gattServer?.sendResponse(
+                    device, requestId, BluetoothGatt.GATT_INVALID_OFFSET, 0, byteArrayOf()
+                )
                 return
             }
             gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, value)
@@ -407,27 +411,34 @@ class GamepadService : Service() {
 
         override fun onCharacteristicWriteRequest(
             device: BluetoothDevice, requestId: Int, characteristic: BluetoothGattCharacteristic,
-            prepared: Boolean, responseNeeded: Boolean, value: ByteArray?
+            prepared: Boolean, responseNeeded: Boolean, offset: Int, value: ByteArray?
         ) {
             // HID Control Point / Report yazmaları — yalnızca onayla.
             if (responseNeeded) {
-                gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, null)
+                gattServer?.sendResponse(
+                    device, requestId, BluetoothGatt.GATT_SUCCESS, 0, byteArrayOf()
+                )
             }
         }
 
         override fun onDescriptorReadRequest(
             device: BluetoothDevice, requestId: Int, offset: Int, descriptor: BluetoothGattDescriptor
         ) {
-            gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_READ_NOT_PERMITTED, null)
+            // CCCC okuması: bildirim kapalı durumu (0x0000) dön
+            gattServer?.sendResponse(
+                device, requestId, BluetoothGatt.GATT_SUCCESS, 0, byteArrayOf(0x00, 0x00)
+            )
         }
 
         override fun onDescriptorWriteRequest(
             device: BluetoothDevice, requestId: Int, descriptor: BluetoothGattDescriptor,
-            prepared: Boolean, responseNeeded: Boolean, length: Int, value: ByteArray?
+            prepared: Boolean, responseNeeded: Boolean, offset: Int, value: ByteArray?
         ) {
-            // CCCC yazmaları (bildirim aç/kapa) — onayla.
+            // CCCC yazmaları (bildirim aç/kapa) — onayla; bildirim yönetimi OS'ta.
             if (responseNeeded) {
-                gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, null)
+                gattServer?.sendResponse(
+                    device, requestId, BluetoothGatt.GATT_SUCCESS, 0, byteArrayOf()
+                )
             }
         }
     }
