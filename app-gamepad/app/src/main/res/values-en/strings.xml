@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BLE Gamepad</string>
+
+    <string name="status_init">Starting…</string>
+    <string name="status_off">Off — press the button to become connectable</string>
+    <string name="status_advertising">Advertising — connect by the device name in the Bluetooth settings of your PC/TV/console</string>
+    <string name="status_connected">Connected: %1$s</string>
+    <string name="status_perm">Bluetooth permissions required — also grant notification access</string>
+
+    <string name="btn_start">Go Connectable</string>
+    <string name="btn_stop">Stop</string>
+
+    <string name="notif_channel">Gamepad status</string>
+    <string name="status_advertising_short">Waiting for a connection…</string>
+    <string name="status_off_short">Gamepad is off</string>
+</resources>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <!-- Sol: durum + başlat/durdur + yön tuşları -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2.4"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:maxLines="2"
+            android:text="@string/status_init"
+            android:textColor="@color/text"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btn_toggle"
+            android:layout_width="170dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="6dp"
+            android:backgroundTint="@color/accent"
+            android:text="@string/btn_start"
+            android:textColor="#00210B"
+            android:textStyle="bold" />
+
+        <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:columnCount="3"
+            android:rowCount="3">
+
+            <Button
+                android:id="@+id/btn_up"
+                android:layout_width="52dp"
+                android:layout_height="44dp"
+                android:layout_column="1"
+                android:layout_row="0"
+                android:backgroundTint="@color/panel"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="▲"
+                android:textColor="@color/text" />
+
+            <Button
+                android:id="@+id/btn_left"
+                android:layout_width="52dp"
+                android:layout_height="44dp"
+                android:layout_column="0"
+                android:layout_row="1"
+                android:backgroundTint="@color/panel"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="◀"
+                android:textColor="@color/text" />
+
+            <Button
+                android:id="@+id/btn_right"
+                android:layout_width="52dp"
+                android:layout_height="44dp"
+                android:layout_column="2"
+                android:layout_row="1"
+                android:backgroundTint="@color/panel"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="▶"
+                android:textColor="@color/text" />
+
+            <Button
+                android:id="@+id/btn_down"
+                android:layout_width="52dp"
+                android:layout_height="44dp"
+                android:layout_column="1"
+                android:layout_row="2"
+                android:backgroundTint="@color/panel"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="▼"
+                android:textColor="@color/text" />
+        </GridLayout>
+    </LinearLayout>
+
+    <!-- Orta: joystick'ler -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="3.4"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <io.github.strongbomber.blegamepad.JoystickView
+            android:id="@+id/stick_left"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <io.github.strongbomber.blegamepad.JoystickView
+            android:id="@+id/stick_right"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <!-- Sağ: aksiyon tuşları -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2.4"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_x"
+                android:layout_width="56dp"
+                android:layout_height="48dp"
+                android:layout_margin="3dp"
+                android:backgroundTint="@color/panel"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="X"
+                android:textColor="@color/text" />
+
+            <Button
+                android:id="@+id/btn_y"
+                android:layout_width="56dp"
+                android:layout_height="48dp"
+                android:layout_margin="3dp"
+                android:backgroundTint="@color/panel"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="Y"
+                android:textColor="@color/text" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_l"
+                android:layout_width="56dp"
+                android:layout_height="48dp"
+                android:layout_margin="3dp"
+                android:backgroundTint="@color/panel"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="L"
+                android:textColor="@color/text" />
+
+            <Button
+                android:id="@+id/btn_a"
+                android:layout_width="56dp"
+                android:layout_height="48dp"
+                android:layout_margin="3dp"
+                android:backgroundTint="@color/accent"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="A"
+                android:textColor="#00210B" />
+
+            <Button
+                android:id="@+id/btn_r"
+                android:layout_width="56dp"
+                android:layout_height="48dp"
+                android:layout_margin="3dp"
+                android:backgroundTint="@color/panel"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="R"
+                android:textColor="@color/text" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_b"
+                android:layout_width="56dp"
+                android:layout_height="48dp"
+                android:layout_margin="3dp"
+                android:backgroundTint="@color/panel"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="B"
+                android:textColor="@color/text" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
