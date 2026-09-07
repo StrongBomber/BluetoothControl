@@ -90,8 +90,12 @@ jobs:
             if [ -f "$f" ]; then log="$f"; break; fi
           done
           if [ -n "$log" ]; then
-            echo "::error::Derleme hatası — son 60 satır ($log):"
-            tail -60 "$log" | sed 's/^/::error:: /'
+            echo "::error::Derleme hatası — anahtar satırlar:"
+            grep -aE "What went wrong|Caused by:|error: |^e: |FAILED|Execution failed for|Could not|Unrecognized|not found|Unsu" "$log" | head -30 | sed 's/^/::error:: /'
+            echo "::error::— hata bloğu (What went wrong + 25 satır):"
+            grep -aA 25 "What went wrong" "$log" | head -30 | sed 's/^/::error:: /'
+            echo "::error::— son 15 satır:"
+            tail -15 "$log" | sed 's/^/::error:: /'
           else
             echo "::error::Derleme günlüğü bulunamadı"
           fi
