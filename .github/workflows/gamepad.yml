@@ -54,9 +54,9 @@ jobs:
             tail -30 sdk-install.log | sed 's/^/::error:: /'
             exit 1
           fi
-          if ! sdkmanager --list --installed 2>/dev/null | grep -q "platforms;android-34"; then
-            echo "::error::platforms;android-34 listede görünmüyor:"
-            sdkmanager --list --installed 2>&1 | tail -20 | sed 's/^/::error:: /'
+          if [ ! -d "$ANDROID_HOME/platforms/android-34" ]; then
+            echo "::error::platforms/android-34 dizini yok — ANDROID_HOME içeriği:"
+            ls "$ANDROID_HOME" 2>&1 | sed 's/^/::error:: /'
             exit 1
           fi
 
