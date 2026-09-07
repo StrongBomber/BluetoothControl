@@ -33,12 +33,25 @@ jobs:
       - name: Android SDK bileşenlerini güncelle
         run: |
           yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager "platforms;android-34" "build-tools;34.0.0" || true
+          sdkmanager "platforms;android-34" "build-tools;34.0.0"
+          sdkmanager --list_installed | grep -E "platforms;android-34|build-tools;34.0.0" || {
+            echo "::error::android-34 kurulamadı"
+            exit 1
+          }
 
       - name: Gradle ile derle
-        run: ./gradlew --no-daemon --stacktrace assembleDebug
-        env:
-          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx2g"
+        run: |
+          ./gradlew --no-daemon --stacktrace assembleDebug 2>&1 | tee ../gradle-build.log
+
+      - name: Hata özeti (başarısızsa)
+        if: failure()
+        run: |
+          {
+            echo '## Derleme hatası — son 80 satır'
+            echo '```'
+            tail -80 ../gradle-build.log || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Üretilen APK'ları listele
         run: ls -lh app/build/outputs/apk/debug/
