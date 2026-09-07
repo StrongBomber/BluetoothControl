@@ -22,20 +22,33 @@ jobs:
 
     steps:
       - name: Kaynağı indir
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
 
       - name: Android SDK bileşenlerini güncelle
         run: |
+          exec > >(tee ../sdk-setup.log) 2>&1
+          set -e
+          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/tools/bin:$PATH"
+          if ! command -v sdkmanager >/dev/null 2>&1; then
+            echo "::notice::sdkmanager PATH'te yok — cmdline-tools indiriliyor"
+            curl -fsSL -o /tmp/cmdtools.zip \
+              https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+            mkdir -p "$ANDROID_HOME/cmdline-tools"
+            (cd /tmp && unzip -q cmdtools.zip)
+            rm -rf "$ANDROID_HOME/cmdline-tools/latest"
+            mv /tmp/cmdline-tools "$ANDROID_HOME/cmdline-tools/latest"
+            export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+          fi
           yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager "platforms;android-34" "build-tools;34.0.0"
-          sdkmanager --list_installed | grep -E "platforms;android-34|build-tools;34.0.0" || {
-            echo "::error::android-34 kurulamadı"
+          sdkmanager "platforms;android-34" "build-tools;34.0.0" 2>&1 | tee ../sdk-setup.log
+          sdkmanager --list --installed | grep -E "platforms;android-34|build-tools;34.0.0" || {
+            echo "::error::android-34 kurulamadı (kaydedilen: /tmp/cmdtools.log)"
             exit 1
           }
 
@@ -49,7 +62,7 @@ jobs:
           {
             echo '## Derleme hatası — son 80 satır'
             echo '```'
-            tail -80 ../gradle-build.log || true
+            tail -80 ../gradle-build.log 2>/dev/null || tail -80 ../sdk-setup.log 2>/dev/null || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
